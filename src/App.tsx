@@ -13,6 +13,7 @@ import { getTodos } from './api';
 
 export const App: React.FC = () => {
   const [loading, setLoading] = useState(false);
+  const [todos, setTodos] = useState<Todo[]>([]);
   const [visibleTodos, setVisibleTodos] = useState<Todo[]>([]);
   const [selectedTodo, setSelectedTodo] = useState<Todo | null>(null);
   const [filterField, setFilterField] = useState<FilterField>(FilterField.All);
@@ -20,34 +21,31 @@ export const App: React.FC = () => {
 
   useEffect(() => {
     setLoading(true);
-
     getTodos()
-      .then(todos => {
-        let filteredTodos = todos;
+      .then(setTodos)
+      .finally(() => setLoading(false));
+  }, []);
 
-        switch (filterField) {
-          case FilterField.Active:
-            filteredTodos = todos.filter(todo => !todo.completed);
-            break;
-          case FilterField.Completed:
-            filteredTodos = todos.filter(todo => todo.completed);
-            break;
-          default:
-            break;
-        }
+  useEffect(() => {
+    let filtered = todos;
 
-        if (query.trim()) {
-          filteredTodos = filteredTodos.filter(todo =>
-            todo.title.toLowerCase().includes(query.toLowerCase()),
-          );
-        }
+    switch (filterField) {
+      case FilterField.Active:
+        filtered = todos.filter(todo => !todo.completed);
+        break;
+      case FilterField.Completed:
+        filtered = todos.filter(todo => todo.completed);
+        break;
+    }
 
-        setVisibleTodos(filteredTodos);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-  }, [filterField, query]);
+    if (query.trim()) {
+      filtered = filtered.filter(todo =>
+        todo.title.toLowerCase().includes(query.toLowerCase()),
+      );
+    }
+
+    setVisibleTodos(filtered);
+  }, [filterField, query, todos]);
 
   return (
     <>
