@@ -2,12 +2,14 @@ import React from 'react';
 import { FilterField } from '../../types/FilterField';
 
 interface Props {
+  filterField: FilterField;
   onFieldChange: (field: FilterField) => void;
   query: string;
   onQueryChange: (query: string) => void;
 }
 
 export const TodoFilter: React.FC<Props> = ({
+  filterField,
   onFieldChange,
   query,
   onQueryChange,
@@ -18,6 +20,7 @@ export const TodoFilter: React.FC<Props> = ({
         <span className="select">
           <select
             data-cy="statusSelect"
+            value={filterField}
             onChange={e => onFieldChange(e.target.value as FilterField)}
           >
             <option value={FilterField.All}>All</option>
